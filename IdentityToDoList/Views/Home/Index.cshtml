@@ -1,0 +1,51 @@
+﻿@model NewTodoItemViewModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+@if (!User.Identity!.IsAuthenticated)
+{
+    <div class="text-center">
+        <h1 class="display-4">Welcome</h1>
+        <p>You must <a asp-area="Identity" asp-page="/Account/Login">Sign in</a> to be able to create your own to-do items.</p>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-8 col-lg-4">
+            <form method="post">
+                <div class="d-flex align-items-baseline">
+                    <input asp-for="Title" type="text" class="form-control me-2" placeholder="What are you going to do?" />
+                    <button class="btn btn-primary">ADD</button>
+                </div>
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </form>
+            <div class="mt-3 ">
+                @foreach (var item in Model!.TodoItems)
+                {
+                    <div class="d-flex align-items-center mb-2">
+                        <input class="me-2" type="checkbox" data-done-id="@item.Id" @(item.Done? "Checked":"") />
+                        <span class="me-auto">@item.Title</span>
+                        <form asp-action="Delete" asp-route-id="@item.Id">
+                            <button class="btn btn-sm btn-danger">&times;</button>
+                        </form>
+                    </div>
+                }
+            </div>
+            <form id="frmSwap" asp-action="SwapDone">
+                <input type="hidden" id="hdnSwapId" name="id" />
+            </form>
+        </div>
+    </div>
+}
+
+@section Scripts{
+    <script>
+        $("[data-done-id]").change(function () {
+            let id = $(this).data("done-id");
+            $("#hdnSwapId").val(id);
+            $("#frmSwap").submit();
+        });
+    </script>
+        }
